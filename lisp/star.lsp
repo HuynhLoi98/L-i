@@ -1,0 +1,32 @@
+;;; Draw a star polygon with given number of points
+;;; Usage: Run STAR command in AutoCAD
+
+(defun c:STAR (/ center radius points step angle i ptlist curpt nextpt)
+  (setq center (getpoint "\nEnter center point: "))
+  (setq radius (getdist center "\nEnter radius: "))
+  (setq points (getint "\nEnter number of star points (>=5): "))
+  (if (< points 5)
+      (progn
+        (princ "\nNumber of points must be at least 5.")
+      )
+      (progn
+        (setq step (/ points 2))
+        (setq angle (/ (* 2 pi) points))
+        (setq i 0 ptlist nil)
+        (while (< i points)
+          (setq curpt (polar center (* i angle) radius))
+          (setq ptlist (cons curpt ptlist))
+          (setq i (1+ i))
+        )
+        (setq ptlist (reverse ptlist))
+        (setq i 0)
+        (while (< i points)
+          (setq curpt (nth i ptlist))
+          (setq nextpt (nth (mod (+ i step) points) ptlist))
+          (command "LINE" curpt nextpt "")
+          (setq i (1+ i))
+        )
+      )
+  )
+  (princ)
+)
